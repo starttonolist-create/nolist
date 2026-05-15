@@ -202,19 +202,6 @@ export default function Home() {
           }
         );
 
-        // 30秒後通知
-        setTimeout(() => {
-
-          new Notification(
-            "NoList",
-            {
-              body:
-                "SNS見てませんか？",
-            }
-          );
-
-        }, 30000);
-
       }
     };
   return (
@@ -252,13 +239,13 @@ export default function Home() {
         <button
           onClick={requestNotification}
           className="
-            bg-zinc-800
-            px-4
-            py-2
-            rounded-xl
-            mb-6
-            ml-2
-          "
+          bg-zinc-800
+          px-4
+          py-2
+          rounded-xl
+          mb-6
+          ml-2
+        "
         >
           🔔 通知ON
         </button>
