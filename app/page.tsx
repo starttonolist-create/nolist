@@ -175,8 +175,8 @@ export default function Home() {
 
         // 21:00 に通知
         if (
-          hour === 21 &&
-          minute === 0
+          hour === 15 &&
+          minute === 34
         ) {
 
           const registration =
