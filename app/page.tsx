@@ -29,31 +29,7 @@ type Habit = {
 };
 import { getToken, onMessage, } from "firebase/messaging";
 import { messaging, } from "../lib/firebase";
-const enableFCM =
-  async () => {
 
-    const permission =
-      await Notification.requestPermission();
-
-    if (
-      permission !== "granted"
-    ) return;
-
-    const token =
-      await getToken(
-        messaging,
-        {
-          vapidKey:
-            "BDnHIgCAMUqikNjepILcP7qDclRizjavRqGOGcHz7e9sEoTZJiAbDFaCMWB81kELBYEpvwZId1xvhiJEE3lcXMg",
-        }
-      );
-
-    console.log(token);
-
-    alert(
-      "FCM有効化"
-    );
-  };
 export default function Home() {
   const [input, setInput] = useState("");
   const [user, setUser] = useState<User | null>(null);
@@ -155,7 +131,69 @@ export default function Home() {
 
     fetchHabits();
   };
+  const enableFCM =
+    async () => {
 
+      if (!messaging) {
+
+        alert(
+          "Messaging未対応"
+        );
+
+        return;
+      }
+
+      const permission =
+        await Notification
+          .requestPermission();
+
+      if (
+        permission !== "granted"
+      ) {
+
+        alert("通知拒否");
+
+        return;
+      }
+
+      // SW登録
+      const registration =
+        await navigator
+          .serviceWorker
+          .register(
+            "/firebase-messaging-sw.js"
+          );
+
+      await navigator
+        .serviceWorker
+        .ready;
+
+      console.log(
+        registration.active
+      );
+      // token取得
+      const token =
+        await getToken(
+          messaging,
+          {
+            vapidKey:
+              "BO0W8pyLZklP6Qv01317gX0Wd8GPEXQf4DxhV-d-KwT2cCg2OopD2-03ABPF1-xN1EMaLZVpfttjb7-loKoBKOQ",
+
+            serviceWorkerRegistration:
+              registration,
+          }
+        );
+
+      console.log(
+        "TOKEN",
+        token
+      );
+
+      alert(
+        "FCM成功"
+      );
+
+    };
   // fail
 
   const failHabit = async (
@@ -347,7 +385,7 @@ export default function Home() {
             onClick={requestNotification}
             className="
           bg-zinc-800
-          px-4
+          px-4  
           py-2
           rounded-xl
           mb-6

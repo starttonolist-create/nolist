@@ -1,22 +1,69 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, } from "firebase/messaging";
-import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider, } from "firebase/auth";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+} from "firebase/auth";
+
+import {
+  getFirestore,
+} from "firebase/firestore";
+
+import {
+  getMessaging,
+  isSupported,
+} from "firebase/messaging";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCp5KqFQUDVN2yHvNdEDbS08i3oj0m7NIU",
-  authDomain: "nolist-2a3d4.firebaseapp.com",
-  projectId: "nolist-2a3d4",
-  storageBucket: "nolist-2a3d4.firebasestorage.app",
-  messagingSenderId: "601771236222",
-  appId: "1:601771236222:web:8dfbb82d6553708758312f",
-  measurementId: "G-S20SYW8PYQ"
+
+  apiKey:
+    "YOUR_API_KEY",
+
+  authDomain:
+    "nolist-2a3d4.firebaseapp.com",
+
+  projectId:
+    "nolist-2a3d4",
+
+  storageBucket:
+    "nolist-2a3d4.appspot.com",
+
+  messagingSenderId:
+    "601771236222",
+
+  appId:
+    "1:601771236222:web:8dfbb82d6553708758312f",
+
 };
 
-const app = initializeApp(firebaseConfig);
-export const messaging = getMessaging(app);
+const app =
+  initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
+export const auth =
+  getAuth(app);
 
-export const auth = getAuth(app);
+export const provider =
+  new GoogleAuthProvider();
 
-export const provider = new GoogleAuthProvider();
+export const db =
+  getFirestore(app);
+
+export let messaging: any =
+  null;
+
+if (
+  typeof window !== "undefined"
+) {
+
+  isSupported().then((yes) => {
+
+    if (yes) {
+
+      messaging =
+        getMessaging(app);
+
+    }
+
+  });
+
+}
