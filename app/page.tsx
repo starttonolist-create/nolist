@@ -202,6 +202,19 @@ export default function Home() {
           }
         );
 
+        // 30秒後通知
+        setTimeout(() => {
+
+          new Notification(
+            "NoList",
+            {
+              body:
+                "SNS見てませんか？",
+            }
+          );
+
+        }, 30000);
+
       }
     };
   return (
