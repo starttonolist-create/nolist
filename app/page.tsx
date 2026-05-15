@@ -191,9 +191,8 @@ export default function Home() {
       );
 
       alert(
-        "FCM成功"
+        "FCM成功: " + token.slice(0, 20)
       );
-
     };
   // fail
 
