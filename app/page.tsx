@@ -201,7 +201,7 @@ export default function Home() {
         // 21:00 に通知
         if (
           hour === 21 &&
-          minute === 00
+          minute === 30
         ) {
 
           const registration =
@@ -359,7 +359,9 @@ export default function Home() {
 
           <button
             onClick={enableFCM}
-          >           FCM ON
+          >
+
+            FCM ON
 
           </button>
           <p className="text-gray-400 mb-8">
