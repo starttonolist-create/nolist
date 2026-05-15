@@ -17,7 +17,7 @@ import {
 const firebaseConfig = {
 
   apiKey:
-    "YOUR_API_KEY",
+    "AIzaSyCp5KqFQUDVN2yHvNdEDbS08i3oj0m7NIU",
 
   authDomain:
     "nolist-2a3d4.firebaseapp.com",

@@ -156,21 +156,11 @@ export default function Home() {
         return;
       }
 
-      // SW登録
-      const registration =
-        await navigator
-          .serviceWorker
-          .register(
-            "/firebase-messaging-sw.js"
-          );
-
       await navigator
         .serviceWorker
-        .ready;
-
-      console.log(
-        registration.active
-      );
+        .register(
+          "/firebase-messaging-sw.js"
+        );
       // token取得
       const token =
         await getToken(
@@ -178,9 +168,10 @@ export default function Home() {
           {
             vapidKey:
               "BO0W8pyLZklP6Qv01317gX0Wd8GPEXQf4DxhV-d-KwT2cCg2OopD2-03ABPF1-xN1EMaLZVpfttjb7-loKoBKOQ",
-
             serviceWorkerRegistration:
-              registration,
+              await navigator
+                .serviceWorker
+                .ready,
           }
         );
 
