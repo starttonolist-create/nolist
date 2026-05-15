@@ -359,6 +359,13 @@ export default function Home() {
 
           <button
             onClick={enableFCM}
+            className="
+    bg-blue-500
+    px-4
+    py-2
+    rounded-xl
+    ml-2
+  "
           >
 
             FCM ON
