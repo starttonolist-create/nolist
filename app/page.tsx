@@ -217,10 +217,18 @@ export default function Home() {
         // 30秒後通知
         setTimeout(async () => {
 
+          console.log(
+            "通知送信"
+          );
+
           const registration =
             await navigator
               .serviceWorker
               .ready;
+
+          console.log(
+            registration
+          );
 
           registration.active?.postMessage(
             "SHOW_NOTIFICATION"
