@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { db } from "../lib/firebase";
-
 import {
   collection,
   addDoc,
@@ -28,7 +27,33 @@ type Habit = {
   id: string;
   title: string;
 };
+import { getToken, onMessage, } from "firebase/messaging";
+import { messaging, } from "../lib/firebase";
+const enableFCM =
+  async () => {
 
+    const permission =
+      await Notification.requestPermission();
+
+    if (
+      permission !== "granted"
+    ) return;
+
+    const token =
+      await getToken(
+        messaging,
+        {
+          vapidKey:
+            "BDnHIgCAMUqikNjepILcP7qDclRizjavRqGOGcHz7e9sEoTZJiAbDFaCMWB81kELBYEpvwZId1xvhiJEE3lcXMg",
+        }
+      );
+
+    console.log(token);
+
+    alert(
+      "FCM有効化"
+    );
+  };
 export default function Home() {
   const [input, setInput] = useState("");
   const [user, setUser] = useState<User | null>(null);
@@ -175,8 +200,8 @@ export default function Home() {
 
         // 21:00 に通知
         if (
-          hour === 15 &&
-          minute === 38
+          hour === 21 &&
+          minute === 00
         ) {
 
           const registration =
@@ -330,6 +355,12 @@ export default function Home() {
         "
           >
             🔔 通知ON
+          </button>
+
+          <button
+            onClick={enableFCM}
+          >           FCM ON
+
           </button>
           <p className="text-gray-400 mb-8">
             やることより、
