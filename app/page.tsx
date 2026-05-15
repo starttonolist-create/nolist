@@ -156,11 +156,23 @@ export default function Home() {
         return;
       }
 
-      await navigator
-        .serviceWorker
-        .register(
-          "/firebase-messaging-sw.js"
-        );
+      // FCM専用SW登録
+      const registration =
+        await navigator
+          .serviceWorker
+          .register(
+            "/firebase-messaging-sw.js",
+            {
+              scope:
+                "/firebase-cloud-messaging-push-scope",
+            }
+          );
+
+      console.log(
+        "FCM SW",
+        registration.active?.scriptURL
+      );
+
       // token取得
       const token =
         await getToken(
@@ -168,13 +180,11 @@ export default function Home() {
           {
             vapidKey:
               "BO0W8pyLZklP6Qv01317gX0Wd8GPEXQf4DxhV-d-KwT2cCg2OopD2-03ABPF1-xN1EMaLZVpfttjb7-loKoBKOQ",
+
             serviceWorkerRegistration:
-              await navigator
-                .serviceWorker
-                .ready,
+              registration,
           }
         );
-
       console.log(
         "TOKEN",
         token
