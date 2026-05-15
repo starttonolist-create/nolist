@@ -176,7 +176,7 @@ export default function Home() {
         // 21:00 に通知
         if (
           hour === 15 &&
-          minute === 34
+          minute === 38
         ) {
 
           const registration =
@@ -188,7 +188,7 @@ export default function Home() {
             "NoList",
             {
               body:
-                "SNS見てませんか？",
+                "SNS見てませんか？ばれていますよ",
               icon: "/icon.png",
               badge: "/icon.png",
             }
