@@ -161,15 +161,45 @@ export default function Home() {
   };
   useEffect(() => {
 
-    if (
-      "serviceWorker" in navigator
-    ) {
+    const interval =
+      setInterval(async () => {
 
-      navigator.serviceWorker.register(
-        "/sw.js"
-      );
+        const now =
+          new Date();
 
-    }
+        const hour =
+          now.getHours();
+
+        const minute =
+          now.getMinutes();
+
+        // 21:00 に通知
+        if (
+          hour === 21 &&
+          minute === 0
+        ) {
+
+          const registration =
+            await navigator
+              .serviceWorker
+              .ready;
+
+          registration.showNotification(
+            "NoList",
+            {
+              body:
+                "SNS見てませんか？",
+              icon: "/icon.png",
+              badge: "/icon.png",
+            }
+          );
+
+        }
+
+      }, 60000);
+
+    return () =>
+      clearInterval(interval);
 
   }, []);
   useEffect(() => {
