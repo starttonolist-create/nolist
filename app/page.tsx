@@ -159,7 +159,19 @@ export default function Home() {
     );
 
   };
+  useEffect(() => {
 
+    if (
+      "serviceWorker" in navigator
+    ) {
+
+      navigator.serviceWorker.register(
+        "/sw.js"
+      );
+
+    }
+
+  }, []);
   useEffect(() => {
 
     const unsubscribe =
@@ -203,17 +215,18 @@ export default function Home() {
         );
 
         // 30秒後通知
-        setTimeout(() => {
+        setTimeout(async () => {
 
-          new Notification(
-            "NoList",
-            {
-              body:
-                "SNS見てませんか？",
-            }
+          const registration =
+            await navigator
+              .serviceWorker
+              .ready;
+
+          registration.active?.postMessage(
+            "SHOW_NOTIFICATION"
           );
 
-        }, 30000);
+        }, 5000);
 
       }
     };
