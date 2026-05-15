@@ -184,26 +184,7 @@ export default function Home() {
 
   }, [user]);
 
-  const requestNotification =
-    async () => {
 
-      const permission =
-        await Notification.requestPermission();
-
-      if (
-        permission === "granted"
-      ) {
-
-        new Notification(
-          "NoList",
-          {
-            body:
-              "通知が有効になりました",
-          }
-        );
-
-      }
-    };
   return (
     <main className="min-h-screen bg-black text-white p-6">
 
@@ -235,79 +216,67 @@ export default function Home() {
             </button>
 
           )
-          < button
-  onClick={requestNotification}
-        className="
-        bg-zinc-800
-        px-4
-        py-2
-        rounded-xl
-        mb-6
-        ml-2
-        "
->
-        🔔 通知ON
-      </button>        }
-      <p className="text-gray-400 mb-8">
-        やることより、
-        やらないこと。
-      </p>
+        }
+        <p className="text-gray-400 mb-8">
+          やることより、
+          やらないこと。
+        </p>
 
-      {/* 統計 */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+        {/* 統計 */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
 
-        <div className="bg-zinc-900 p-4 rounded-2xl">
-          <p className="text-gray-400 text-sm">
-            無駄時間
-          </p>
+          <div className="bg-zinc-900 p-4 rounded-2xl">
+            <p className="text-gray-400 text-sm">
+              無駄時間
+            </p>
 
-          <h2 className="text-3xl font-bold">
-            {wasteTime}分
-          </h2>
+            <h2 className="text-3xl font-bold">
+              {wasteTime}分
+            </h2>
+          </div>
+
+          <div className="bg-zinc-900 p-4 rounded-2xl">
+            <p className="text-gray-400 text-sm">
+              失敗回数
+            </p>
+
+            <h2 className="text-3xl font-bold">
+              {failCount}回
+            </h2>
+          </div>
+
+          <div className="bg-zinc-900 p-4 rounded-2xl">
+            <p className="text-gray-400 text-sm">
+              ストリーク
+            </p>
+
+            <h2 className="text-3xl font-bold">
+              🔥 {streak}日
+            </h2>
+          </div>
+
+          <div className="bg-zinc-900 p-4 rounded-2xl">
+            <p className="text-gray-400 text-sm">
+              達成率
+            </p>
+
+            <h2 className="text-3xl font-bold">
+              {successRate}%
+            </h2>
+          </div>
+
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-2xl">
-          <p className="text-gray-400 text-sm">
-            失敗回数
-          </p>
+        {/* 入力 */}
+        <div className="flex gap-2 mb-6">
 
-          <h2 className="text-3xl font-bold">
-            {failCount}回
-          </h2>
-        </div>
-
-        <div className="bg-zinc-900 p-4 rounded-2xl">
-          <p className="text-gray-400 text-sm">
-            ストリーク
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            🔥 {streak}日
-          </h2>
-        </div>
-
-        <div className="bg-zinc-900 p-4 rounded-2xl">
-          <p className="text-gray-400 text-sm">
-            達成率
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            {successRate}%
-          </h2>
-        </div>
-
-      </div>
-
-      {/* 入力 */}
-      <div className="flex gap-2 mb-6">
-
-        <input
-          value={input}
-          onChange={(e) =>
-            setInput(e.target.value)
-          }
-          placeholder="やらないこと"
-          className="
+          <input
+            value={input}
+            onChange={(e) =>
+              setInput(e.target.value)
+            }
+            placeholder="やらないこと"
+            className="
               flex-1
               bg-zinc-900
               rounded-xl
@@ -315,31 +284,31 @@ export default function Home() {
               py-3
               outline-none
             "
-        />
+          />
 
-        <button
-          onClick={addHabit}
-          className="
+          <button
+            onClick={addHabit}
+            className="
               bg-white
               text-black
               px-4
               rounded-xl
               font-bold
             "
-        >
-          追加
-        </button>
+          >
+            追加
+          </button>
 
-      </div>
+        </div>
 
-      {/* habits */}
-      <div className="space-y-3">
+        {/* habits */}
+        <div className="space-y-3">
 
-        {habits.map((habit) => (
+          {habits.map((habit) => (
 
-          <div
-            key={habit.id}
-            className="
+            <div
+              key={habit.id}
+              className="
                 bg-zinc-900
                 rounded-2xl
                 p-4
@@ -347,55 +316,55 @@ export default function Home() {
                 items-center
                 justify-between
               "
-          >
+            >
 
-            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
 
-              <p>{habit.title}</p>
+                <p>{habit.title}</p>
 
-              <button
-                onClick={async () => {
+                <button
+                  onClick={async () => {
 
-                  await deleteDoc(
-                    doc(db, "habits", habit.id)
-                  );
+                    await deleteDoc(
+                      doc(db, "habits", habit.id)
+                    );
 
-                  fetchHabits();
+                    fetchHabits();
 
-                }}
-                className="
+                  }}
+                  className="
                     text-xs
                     text-gray-400
                   "
-              >
-                削除
-              </button>
+                >
+                  削除
+                </button>
 
-            </div>
+              </div>
 
-            <button
-              onClick={() =>
-                failHabit(habit.id)
-              }
-              className="
+              <button
+                onClick={() =>
+                  failHabit(habit.id)
+                }
+                className="
                   bg-red-500
                   px-4
                   py-2
                   rounded-xl
                   font-bold
                 "
-            >
-              破った
-            </button>
+              >
+                破った
+              </button>
 
-          </div>
+            </div>
 
-        ))}
+          ))}
+
+        </div>
 
       </div>
 
-    </div>
-
-    </main >
+    </main>
   );
 }
