@@ -48,22 +48,7 @@ export const provider =
 export const db =
   getFirestore(app);
 
-export let messaging: any =
-  null;
-
-if (
+export const messaging =
   typeof window !== "undefined"
-) {
-
-  isSupported().then((yes) => {
-
-    if (yes) {
-
-      messaging =
-        getMessaging(app);
-
-    }
-
-  });
-
-}
+    ? getMessaging(app)
+    : null;
