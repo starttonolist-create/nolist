@@ -118,8 +118,11 @@ export default function Home() {
     setStreak(count === 0 ? 1 : 0);
   };
   const fetchNotificationLogs = async () => {
+    if (!user) return;
+
     const q = query(
       collection(db, "notificationLogs"),
+      where("userId", "==", user.uid),
       orderBy("sentAt", "desc"),
       limit(5)
     );

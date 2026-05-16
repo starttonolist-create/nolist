@@ -68,7 +68,7 @@ export async function POST() {
         successCount: result.successCount,
         failureCount: result.failureCount,
         sentAt: new Date().toISOString(),
-        userId: userId,
+        userId,
     });
     return NextResponse.json({
         ok: true,
