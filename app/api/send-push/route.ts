@@ -30,10 +30,12 @@ export async function POST() {
             habits.length
         )
         ] || "SNS";
+    const userId = "ここに自分のUID";
+
     const snapshot = await db
         .collection("fcmTokens")
+        .where("userId", "==", userId)
         .get();
-
     const tokens = snapshot.docs
         .map((doc) => doc.data().token)
         .filter(Boolean);
@@ -66,6 +68,7 @@ export async function POST() {
         successCount: result.successCount,
         failureCount: result.failureCount,
         sentAt: new Date().toISOString(),
+        userId: "aX1LL09JIRP44poEjDIxzXYEenu2",
     });
     return NextResponse.json({
         ok: true,
