@@ -128,14 +128,10 @@ export default function Home() {
 
     const q = query(
       collection(db, "notificationLogs"),
-      where(
-        "userId",
-        "==",
-        targetUid
-      ),
+      where("userId", "==", targetUid),
+      orderBy("sentAt", "desc"),
       limit(5)
     );
-
     const snapshot = await getDocs(q);
 
     const data = snapshot.docs.map((doc) => ({
@@ -292,7 +288,9 @@ export default function Home() {
 
     const data = await res.json();
 
-    await fetchNotificationLogs(user.uid);
+    setTimeout(() => {
+      fetchNotificationLogs(user.uid);
+    }, 1500);
 
     alert(
       `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
