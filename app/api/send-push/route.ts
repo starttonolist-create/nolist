@@ -44,9 +44,9 @@ export async function POST() {
         return NextResponse.json({
             ok: false,
             message: "tokenなし",
+            userId,
         });
     }
-
     const result = await admin
         .messaging()
         .sendEachForMulticast({
@@ -72,8 +72,10 @@ export async function POST() {
     });
     return NextResponse.json({
         ok: true,
+        tokenCount: tokens.length,
         successCount: result.successCount,
         failureCount: result.failureCount,
+        userId,
     });
 }
 
