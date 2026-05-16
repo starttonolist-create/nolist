@@ -30,7 +30,7 @@ export async function POST() {
             habits.length
         )
         ] || "SNS";
-    const userId = "ここに自分のUID";
+    const userId = "aX1LL09JIRP44poEjDIxzXYEenu2";
 
     const snapshot = await db
         .collection("fcmTokens")
@@ -68,7 +68,7 @@ export async function POST() {
         successCount: result.successCount,
         failureCount: result.failureCount,
         sentAt: new Date().toISOString(),
-        userId: "aX1LL09JIRP44poEjDIxzXYEenu2",
+        userId: userId,
     });
     return NextResponse.json({
         ok: true,
