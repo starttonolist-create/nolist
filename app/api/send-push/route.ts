@@ -60,7 +60,13 @@ export async function POST() {
                 },
             },
         });
-
+    await db.collection("notificationLogs").add({
+        title: "NoList",
+        body: `${randomHabit}見てませんか？`,
+        successCount: result.successCount,
+        failureCount: result.failureCount,
+        sentAt: new Date().toISOString(),
+    });
     return NextResponse.json({
         ok: true,
         successCount: result.successCount,

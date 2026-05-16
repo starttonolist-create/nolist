@@ -12,6 +12,8 @@ import {
   query,
   where,
   setDoc,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 
 import {
@@ -35,6 +37,8 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [notificationLogs, setNotificationLogs] =
+    useState<any[]>([]);
 
   const [wasteTime, setWasteTime] =
     useState(0);
@@ -113,7 +117,22 @@ export default function Home() {
 
     setStreak(count === 0 ? 1 : 0);
   };
+  const fetchNotificationLogs = async () => {
+    const q = query(
+      collection(db, "notificationLogs"),
+      orderBy("sentAt", "desc"),
+      limit(5)
+    );
 
+    const snapshot = await getDocs(q);
+
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setNotificationLogs(data);
+  };
   // habit追加
   const addHabit = async () => {
 
@@ -323,6 +342,8 @@ export default function Home() {
             fetchHabits();
 
             fetchLogs();
+
+            fetchNotificationLogs();
 
           }
 
@@ -621,7 +642,25 @@ export default function Home() {
             ))}
 
           </div>
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-3">
+              通知履歴
+            </h2>
 
+            <div className="space-y-2">
+              {notificationLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="bg-zinc-900 rounded-xl p-3 text-sm"
+                >
+                  <p>{log.body}</p>
+                  <p className="text-gray-500 text-xs">
+                    {log.sentAt}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
       </main>
