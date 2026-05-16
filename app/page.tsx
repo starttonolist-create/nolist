@@ -122,7 +122,7 @@ export default function Home() {
 
     const q = query(
       collection(db, "notificationLogs"),
-      // where("userId", "==", user.uid),
+      where("userId", "==", user.uid),
       orderBy("sentAt", "desc"),
       limit(5)
     );
@@ -265,26 +265,28 @@ export default function Home() {
 
   };
   const sendPush = async () => {
+    if (!user) {
+      alert("ログインしてください");
+      return;
+    }
 
-    const res =
-      await fetch(
-        "/api/send-push",
-        {
-          method: "POST",
-        }
-      );
+    const res = await fetch("/api/send-push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user.uid,
+      }),
+    });
 
-    const data =
-      await res.json();
+    const data = await res.json();
 
-    // 通知履歴再取得
     fetchNotificationLogs();
 
     alert(
-      `送信完了 成功:${data.successCount ?? 0
-      } 失敗:${data.failureCount ?? 0}`
+      `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
     );
-
   };
   useEffect(() => {
     const setupForegroundMessage = async () => {

@@ -11,8 +11,17 @@ if (!admin.apps.length) {
     });
 }
 
-export async function POST() {
+export async function POST(request: Request) {
     const db = admin.firestore();
+    const body = await request.json();
+    const userId = body.userId;
+
+    if (!userId) {
+        return NextResponse.json({
+            ok: false,
+            message: "userIdなし",
+        });
+    }
     const habitsSnapshot =
         await db
             .collection("habits")
@@ -30,7 +39,6 @@ export async function POST() {
             habits.length
         )
         ] || "SNS";
-    const userId = "aX1LL09JIRP44poEjDIxzXYEenu2";
 
     const snapshot = await db
         .collection("fcmTokens")
@@ -80,5 +88,11 @@ export async function POST() {
 }
 
 export async function GET() {
-    return POST();
+
+    return NextResponse.json({
+        ok: false,
+        message:
+            "GETは未対応",
+    });
+
 }
