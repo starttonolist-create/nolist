@@ -243,6 +243,21 @@ export default function Home() {
 
   };
   useEffect(() => {
+    if (!messaging) return;
+
+    const unsubscribe = onMessage(
+      messaging,
+      (payload) => {
+        alert(
+          payload.notification?.body ||
+          "通知を受信しました"
+        );
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+  useEffect(() => {
 
     const interval =
       setInterval(async () => {
