@@ -122,7 +122,7 @@ export default function Home() {
 
     const q = query(
       collection(db, "notificationLogs"),
-      where("userId", "==", user.uid),
+      // where("userId", "==", user.uid),
       orderBy("sentAt", "desc"),
       limit(5)
     );
