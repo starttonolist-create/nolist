@@ -1,0 +1,52 @@
+import { NextResponse } from "next/server";
+import admin from "firebase-admin";
+
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+        }),
+    });
+}
+
+export async function POST() {
+    const db = admin.firestore();
+
+    const snapshot = await db
+        .collection("fcmTokens")
+        .get();
+
+    const tokens = snapshot.docs
+        .map((doc) => doc.data().token)
+        .filter(Boolean);
+
+    if (tokens.length === 0) {
+        return NextResponse.json({
+            ok: false,
+            message: "tokenなし",
+        });
+    }
+
+    const result = await admin
+        .messaging()
+        .sendEachForMulticast({
+            tokens,
+            notification: {
+                title: "NoList",
+                body: "SNS見てませんか？",
+            },
+            webpush: {
+                notification: {
+                    icon: "/icon.png",
+                },
+            },
+        });
+
+    return NextResponse.json({
+        ok: true,
+        successCount: result.successCount,
+        failureCount: result.failureCount,
+    });
+}

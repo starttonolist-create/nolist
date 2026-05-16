@@ -309,6 +309,18 @@ export default function Home() {
 
   }, [user]);
 
+  const sendPush = async () => {
+    const res = await fetch("/api/send-push", {
+      method: "POST",
+    });
+
+    const data = await res.json();
+
+    alert(
+      `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
+    );
+  };
+
   const requestNotification =
     async () => {
 
@@ -368,7 +380,6 @@ export default function Home() {
         );
 
       }, 5000);
-
     }; return (
       <main className="min-h-screen bg-black text-white p-6">
 
@@ -418,16 +429,28 @@ export default function Home() {
           <button
             onClick={enableFCM}
             className="
-    bg-blue-500
-    px-4
-    py-2
-    rounded-xl
-    ml-2
-  "
+            bg-blue-500
+            px-4
+            py-2
+            rounded-xl
+            ml-2
+          "
           >
 
             FCM ON
 
+          </button>
+          <button
+            onClick={sendPush}
+            className="
+            bg-green-500
+            px-4
+            py-2
+            rounded-xl
+            ml-2
+          "
+          >
+            Push送信
           </button>
           <p className="text-gray-400 mb-8">
             やることより、
