@@ -185,14 +185,21 @@ export default function Home() {
               registration,
           }
         );
-      console.log(
-        "TOKEN",
+      if (!token) {
+
+        alert("TOKENなし");
+
+        return;
+      }
+
+      console.log(token);
+
+      prompt(
+        "FCM TOKEN",
         token
       );
 
-      alert(
-        "FCM成功: " + token.slice(0, 20)
-      );
+      alert("FCM成功");
     };
   // fail
 
