@@ -292,7 +292,7 @@ export default function Home() {
 
     const data = await res.json();
 
-    fetchNotificationLogs();
+    await fetchNotificationLogs(user.uid);
 
     alert(
       `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
