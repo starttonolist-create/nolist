@@ -11,6 +11,7 @@ import {
   doc,
   query,
   where,
+  setDoc,
 } from "firebase/firestore";
 
 import {
@@ -193,13 +194,25 @@ export default function Home() {
       }
 
       console.log(token);
+      if (!user) {
+        alert("ログインしてください");
+        return;
+      }
 
+      await setDoc(
+        doc(db, "fcmTokens", user.uid),
+        {
+          userId: user.uid,
+          token,
+          updatedAt: new Date().toISOString(),
+        }
+      );
       prompt(
         "FCM TOKEN",
         token
       );
 
-      alert("FCM成功");
+      alert("FCM成功・トークン保存完了");
     };
   // fail
 
