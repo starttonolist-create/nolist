@@ -117,13 +117,22 @@ export default function Home() {
 
     setStreak(count === 0 ? 1 : 0);
   };
-  const fetchNotificationLogs = async () => {
-    if (!user) return;
+  const fetchNotificationLogs = async (
+    uid?: string
+  ) => {
+
+    const targetUid =
+      uid || user?.uid;
+
+    if (!targetUid) return;
 
     const q = query(
       collection(db, "notificationLogs"),
-      where("userId", "==", user.uid),
-      orderBy("sentAt", "desc"),
+      where(
+        "userId",
+        "==",
+        targetUid
+      ),
       limit(5)
     );
 
@@ -132,7 +141,8 @@ export default function Home() {
     const data = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }));
+    })
+    );
 
     setNotificationLogs(data);
   };
@@ -371,10 +381,11 @@ export default function Home() {
 
             fetchLogs();
 
-            fetchNotificationLogs();
+            fetchNotificationLogs(
+              currentUser.uid
+            );
 
           }
-
         }
       );
 
