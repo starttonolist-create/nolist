@@ -50,3 +50,7 @@ export async function POST() {
         failureCount: result.failureCount,
     });
 }
+
+export async function GET() {
+    return POST();
+}
