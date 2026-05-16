@@ -13,7 +13,23 @@ if (!admin.apps.length) {
 
 export async function POST() {
     const db = admin.firestore();
+    const habitsSnapshot =
+        await db
+            .collection("habits")
+            .get();
 
+    const habits =
+        habitsSnapshot.docs.map(
+            (doc) => doc.data().title
+        );
+
+    const randomHabit =
+        habits[
+        Math.floor(
+            Math.random() *
+            habits.length
+        )
+        ] || "SNS";
     const snapshot = await db
         .collection("fcmTokens")
         .get();
@@ -35,7 +51,8 @@ export async function POST() {
             tokens,
             notification: {
                 title: "NoList",
-                body: "SNS見てませんか？",
+                body:
+                    `${randomHabit}見てませんか？`,
             },
             webpush: {
                 notification: {
