@@ -261,6 +261,28 @@ export default function Home() {
     );
 
   };
+  const sendPush = async () => {
+
+    const res =
+      await fetch(
+        "/api/send-push",
+        {
+          method: "POST",
+        }
+      );
+
+    const data =
+      await res.json();
+
+    // 通知履歴再取得
+    fetchNotificationLogs();
+
+    alert(
+      `送信完了 成功:${data.successCount ?? 0
+      } 失敗:${data.failureCount ?? 0}`
+    );
+
+  };
   useEffect(() => {
     const setupForegroundMessage = async () => {
       if (!messaging) {
@@ -354,20 +376,6 @@ export default function Home() {
     return () => unsubscribe();
 
   }, [user]);
-
-  const sendPush = async () => {
-    const res = await fetch("/api/send-push", {
-      method: "POST",
-    });
-
-    const data = await res.json();
-
-    fetchNotificationLogs();
-
-    alert(
-      `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
-    );
-  };
 
   const requestNotification =
     async () => {
