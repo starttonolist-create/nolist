@@ -25,6 +25,7 @@ export async function POST(request: Request) {
     const habitsSnapshot =
         await db
             .collection("habits")
+            .where("userId", "==", userId)
             .get();
 
     const habits =
