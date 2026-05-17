@@ -37,6 +37,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [notificationTime, setNotificationTime] = useState("21:00");
   const [notificationLogs, setNotificationLogs] =
     useState<any[]>([]);
 
@@ -294,8 +295,28 @@ export default function Home() {
     }, 1500);
 
     alert(
-      `送信完了 成功:${data.successCount ?? 0} 失敗:${data.failureCount ?? 0}`
+      `送信完了
+        成功: ${data.successCount ?? 0}
+        失敗: ${data.failureCount ?? 0}
+        削除トークン: ${data.deletedTokenCount ?? 0}`
     );
+  };
+  const saveNotificationTime = async () => {
+    if (!user) {
+      alert("ログインしてください");
+      return;
+    }
+
+    await setDoc(
+      doc(db, "notificationSettings", user.uid),
+      {
+        userId: user.uid,
+        time: notificationTime,
+        updatedAt: new Date().toISOString(),
+      }
+    );
+
+    alert("通知時間を保存しました");
   };
   useEffect(() => {
     const setupForegroundMessage = async () => {
@@ -527,7 +548,34 @@ export default function Home() {
             やることより、
             やらないこと。
           </p>
+          <div className="mt-4 flex gap-2 items-center">
+            <input
+              type="time"
+              value={notificationTime}
+              onChange={(e) =>
+                setNotificationTime(e.target.value)
+              }
+              className="
+                bg-zinc-900
+                text-white
+                px-4
+                py-2
+                rounded-xl
+              "
+            />
 
+            <button
+              onClick={saveNotificationTime}
+              className="
+                bg-purple-500
+                px-4
+                py-2
+                rounded-xl
+              "
+            >
+              通知時間保存
+            </button>
+          </div>
           {/* 統計 */}
           <div className="grid grid-cols-2 gap-3 mb-6">
 
