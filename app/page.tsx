@@ -177,6 +177,28 @@ export default function Home() {
       }
 
     };
+  const fetchFcmStatus =
+    async (uid?: string) => {
+
+      const targetUid =
+        uid || user?.uid;
+
+      if (!targetUid) return;
+
+      const snapshot =
+        await getDoc(
+          doc(
+            db,
+            "fcmTokens",
+            targetUid
+          )
+        );
+
+      setFcmEnabled(
+        snapshot.exists()
+      );
+
+    };
   // habit追加
   const addHabit = async () => {
 
@@ -447,6 +469,10 @@ export default function Home() {
             );
 
             fetchNotificationTime(
+              currentUser.uid
+            );
+
+            fetchFcmStatus(
               currentUser.uid
             );
 
