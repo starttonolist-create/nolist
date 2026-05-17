@@ -80,7 +80,10 @@ export async function POST(request: Request) {
         return NextResponse.json({
             ok: false,
             message: "tokenなし",
+            targetUserIds,
+            tokenCount: tokens.length,
             userId,
+            jstTime,
         });
     }
     let successCount = 0;

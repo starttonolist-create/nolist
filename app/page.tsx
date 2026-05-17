@@ -290,15 +290,14 @@ export default function Home() {
 
     const data = await res.json();
 
-    setTimeout(() => {
-      fetchNotificationLogs(user.uid);
-    }, 1500);
+    console.log(data);
 
     alert(
-      `送信完了
-        成功: ${data.successCount ?? 0}
-        失敗: ${data.failureCount ?? 0}
-        削除トークン: ${data.deletedTokenCount ?? 0}`
+      JSON.stringify(
+        data,
+        null,
+        2
+      )
     );
   };
   const saveNotificationTime = async () => {
