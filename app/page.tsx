@@ -120,25 +120,26 @@ export default function Home() {
   const fetchNotificationLogs = async (
     uid?: string
   ) => {
-
-    const targetUid =
-      uid || user?.uid;
+    const targetUid = uid || user?.uid;
 
     if (!targetUid) return;
 
     const q = query(
       collection(db, "notificationLogs"),
-      where("userId", "==", targetUid),
-      orderBy("sentAt", "desc"),
-      limit(5)
+      where("userId", "==", targetUid)
     );
+
     const snapshot = await getDocs(q);
 
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })
-    );
+    const data = snapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .sort((a: any, b: any) =>
+        String(b.sentAt).localeCompare(String(a.sentAt))
+      )
+      .slice(0, 5);
 
     setNotificationLogs(data);
   };
