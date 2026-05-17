@@ -42,7 +42,8 @@ export default function Home() {
   const [notificationTime, setNotificationTime] = useState("21:00");
   const [notificationLogs, setNotificationLogs] =
     useState<any[]>([]);
-
+  const [fcmEnabled, setFcmEnabled] =
+    useState(false);
   const [wasteTime, setWasteTime] =
     useState(0);
 
@@ -273,7 +274,7 @@ export default function Home() {
         "FCM TOKEN",
         token
       );
-
+      setFcmEnabled(true);
       alert("FCM成功・トークン保存完了");
     };
   // fail
@@ -578,16 +579,19 @@ export default function Home() {
 
           <button
             onClick={enableFCM}
-            className="
-            bg-blue-500
-            px-4
-            py-2
-            rounded-xl
-            ml-2
-          "
-          >
-
-            FCM ON
+            className={`
+              px-4
+              py-2
+              rounded-xl
+              ml-2
+              ${fcmEnabled
+                ? "bg-green-600"
+                : "bg-blue-500"
+              }
+            `}
+          > {fcmEnabled
+            ? "✅ 通知ON済み"
+            : "FCM ON"}
 
           </button>
 
