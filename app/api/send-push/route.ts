@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     if (tokens.length === 0) {
         return NextResponse.json({
             ok: false,
-            message: "tokenなしs",
+            message: "tokenなし",
             targetUserIds,
             tokenCount: tokens.length,
             userId,
