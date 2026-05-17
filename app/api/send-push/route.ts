@@ -159,8 +159,10 @@ export async function POST(request: Request) {
         ok: true,
         jstTime,
         targetUserCount: targetUserIds.length,
+        tokenCount: tokens.length,
         successCount,
         failureCount,
+        deletedTokenCount,
     });
 }
 
