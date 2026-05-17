@@ -45,14 +45,22 @@ export async function POST(request: Request) {
     ).format(now);
     const body = await request.json().catch(() => ({}));
     const userId = body.userId;
-    const settingsSnapshot = await db
-        .collection("notificationSettings")
-        .where("time", "==", jstTime)
-        .get();
+    let targetUserIds: string[] = [];
 
-    const targetUserIds = settingsSnapshot.docs.map(
-        (doc) => doc.data().userId
-    );
+    if (userId) {
+        // 手動Push
+        targetUserIds = [userId];
+    } else {
+        // Cron自動Push
+        const settingsSnapshot = await db
+            .collection("notificationSettings")
+            .where("time", "==", jstTime)
+            .get();
+
+        targetUserIds = settingsSnapshot.docs.map(
+            (doc) => doc.data().userId
+        );
+    }
     if (targetUserIds.length === 0) {
         return NextResponse.json({
             ok: true,
