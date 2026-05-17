@@ -20,6 +20,7 @@ import {
 import {
   signInWithPopup,
   onAuthStateChanged,
+  signOut,
   User,
 } from "firebase/auth";
 
@@ -303,6 +304,10 @@ export default function Home() {
     );
 
   };
+
+  const logout = async () => {
+    await signOut(auth);
+  };
   const sendPush = async () => {
     if (!user) {
       alert("ログインしてください");
@@ -521,10 +526,24 @@ export default function Home() {
           </h1>
           {
             user ? (
-              <p className="mb-6 text-gray-400">
-                こんにちは、
-                {user.displayName}
-              </p>
+              <div className="mb-6">
+                <p className="text-gray-400">
+                  こんにちは、
+                  {user.displayName}
+                </p>
+
+                <button
+                  onClick={logout}
+                  className="
+                    mt-2
+                    text-sm
+                    text-gray-400
+                    underline
+                  "
+                >
+                  ログアウト
+                </button>
+              </div>
             ) : (
               <button
                 onClick={login}
