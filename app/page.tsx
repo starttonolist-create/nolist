@@ -307,16 +307,21 @@ export default function Home() {
       return;
     }
 
-    await setDoc(
-      doc(db, "notificationSettings", user.uid),
-      {
-        userId: user.uid,
-        time: notificationTime,
-        updatedAt: new Date().toISOString(),
-      }
-    );
+    try {
+      await setDoc(
+        doc(db, "notificationSettings", user.uid),
+        {
+          userId: user.uid,
+          time: notificationTime,
+          updatedAt: new Date().toISOString(),
+        }
+      );
 
-    alert("通知時間を保存しました");
+      alert("通知時間を保存しました");
+    } catch (error) {
+      console.error(error);
+      alert("通知時間の保存に失敗しました");
+    }
   };
   useEffect(() => {
     const setupForegroundMessage = async () => {
