@@ -12,6 +12,7 @@ import {
   query,
   where,
   setDoc,
+  getDoc,
   orderBy,
   limit,
 } from "firebase/firestore";
@@ -119,8 +120,7 @@ export default function Home() {
     setStreak(count === 0 ? 1 : 0);
   };
   const fetchNotificationLogs = async (
-    uid?: string
-  ) => {
+    uid?: string) => {
     const targetUid = uid || user?.uid;
 
     if (!targetUid) return;
@@ -144,6 +144,37 @@ export default function Home() {
 
     setNotificationLogs(data);
   };
+  const fetchNotificationTime =
+    async (uid?: string) => {
+
+      const targetUid =
+        uid || user?.uid;
+
+      if (!targetUid) return;
+
+      const snapshot =
+        await getDoc(
+          doc(
+            db,
+            "notificationSettings",
+            targetUid
+          )
+        );
+
+      if (snapshot.exists()) {
+
+        const data =
+          snapshot.data();
+
+        if (data.time) {
+          setNotificationTime(
+            data.time
+          );
+        }
+
+      }
+
+    };
   // habit追加
   const addHabit = async () => {
 
@@ -406,6 +437,10 @@ export default function Home() {
             fetchLogs();
 
             fetchNotificationLogs(
+              currentUser.uid
+            );
+
+            fetchNotificationTime(
               currentUser.uid
             );
 
