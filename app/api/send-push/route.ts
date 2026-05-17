@@ -71,6 +71,22 @@ export async function POST(request: Request) {
                 },
             },
         });
+    const batch = db.batch();
+
+    result.responses.forEach((response, index) => {
+        if (!response.success) {
+            const failedToken = tokens[index];
+
+            snapshot.docs.forEach((doc) => {
+                if (doc.data().token === failedToken) {
+                    batch.delete(doc.ref);
+                    deletedTokenCount++;
+                }
+            });
+        }
+    });
+    let deletedTokenCount = 0;
+    await batch.commit();
     await db.collection("notificationLogs").add({
         title: "NoList",
         body: `${randomHabit}見てませんか？`,
@@ -84,6 +100,7 @@ export async function POST(request: Request) {
         tokenCount: tokens.length,
         successCount: result.successCount,
         failureCount: result.failureCount,
+        deletedTokenCount,
         userId,
     });
 }
