@@ -536,18 +536,7 @@ export default function Home() {
             FCM ON
 
           </button>
-          <button
-            onClick={sendPush}
-            className="
-            bg-green-500
-            px-4
-            py-2
-            rounded-xl
-            ml-2
-          "
-          >
-            Push送信
-          </button>
+
           <p className="text-gray-400 mb-8">
             やることより、
             やらないこと。
