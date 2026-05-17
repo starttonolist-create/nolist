@@ -10,40 +10,59 @@ if (!admin.apps.length) {
         }),
     });
 }
+const getRandomHabitText = async (
+    db: FirebaseFirestore.Firestore,
+    userId: string
+) => {
+    const habitsSnapshot = await db
+        .collection("habits")
+        .where("userId", "==", userId)
+        .get();
 
-export async function POST(request: Request) {
-    const db = admin.firestore();
-    const body = await request.json();
-    const userId = body.userId;
-
-    if (!userId) {
-        return NextResponse.json({
-            ok: false,
-            message: "userIdなし",
-        });
-    }
-    const habitsSnapshot =
-        await db
-            .collection("habits")
-            .where("userId", "==", userId)
-            .get();
-
-    const habits =
-        habitsSnapshot.docs.map(
-            (doc) => doc.data().title
-        );
+    const habits = habitsSnapshot.docs.map(
+        (doc) => doc.data().title
+    );
 
     const randomHabit =
         habits[
-        Math.floor(
-            Math.random() *
-            habits.length
-        )
+        Math.floor(Math.random() * habits.length)
         ] || "SNS";
 
+    return `${randomHabit}見てませんか？`;
+};
+export async function POST(request: Request) {
+    const db = admin.firestore();
+    const now = new Date();
+
+    const jstTime = new Intl.DateTimeFormat(
+        "ja-JP",
+        {
+            timeZone: "Asia/Tokyo",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }
+    ).format(now);
+    const body = await request.json().catch(() => ({}));
+    const userId = body.userId;
+    const settingsSnapshot = await db
+        .collection("notificationSettings")
+        .where("time", "==", jstTime)
+        .get();
+
+    const targetUserIds = settingsSnapshot.docs.map(
+        (doc) => doc.data().userId
+    );
+    if (targetUserIds.length === 0) {
+        return NextResponse.json({
+            ok: true,
+            message: "対象ユーザーなし",
+            jstTime,
+        });
+    }
     const snapshot = await db
         .collection("fcmTokens")
-        .where("userId", "==", userId)
+        .where("userId", "in", targetUserIds.slice(0, 10))
         .get();
     const tokens = snapshot.docs
         .map((doc) => doc.data().token)
@@ -56,14 +75,39 @@ export async function POST(request: Request) {
             userId,
         });
     }
-    const result = await admin
-        .messaging()
-        .sendEachForMulticast({
-            tokens,
+    let successCount = 0;
+    let failureCount = 0;
+    let deletedTokenCount = 0;
+
+    const tokensByUser: Record<string, string[]> = {};
+    const tokenDocRefsByToken: Record<string, FirebaseFirestore.DocumentReference> = {};
+
+    snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+
+        if (!tokensByUser[data.userId]) {
+            tokensByUser[data.userId] = [];
+        }
+
+        tokensByUser[data.userId].push(data.token);
+        tokenDocRefsByToken[data.token] = doc.ref;
+    });
+
+    for (const targetUserId of targetUserIds) {
+        const userTokens = tokensByUser[targetUserId] || [];
+
+        if (userTokens.length === 0) continue;
+
+        const messageBody = await getRandomHabitText(
+            db,
+            targetUserId
+        );
+
+        const result = await admin.messaging().sendEachForMulticast({
+            tokens: userTokens,
             notification: {
                 title: "NoList",
-                body:
-                    `${randomHabit}見てませんか？`,
+                body: messageBody,
             },
             webpush: {
                 notification: {
@@ -71,46 +115,52 @@ export async function POST(request: Request) {
                 },
             },
         });
-    const batch = db.batch();
 
-    result.responses.forEach((response, index) => {
-        if (!response.success) {
-            const failedToken = tokens[index];
+        successCount += result.successCount;
+        failureCount += result.failureCount;
 
-            snapshot.docs.forEach((doc) => {
-                if (doc.data().token === failedToken) {
-                    batch.delete(doc.ref);
+        const batch = db.batch();
+
+        result.responses.forEach((response, index) => {
+            if (!response.success) {
+                const failedToken = userTokens[index];
+                const ref = tokenDocRefsByToken[failedToken];
+
+                if (ref) {
+                    batch.delete(ref);
                     deletedTokenCount++;
                 }
-            });
-        }
-    });
-    let deletedTokenCount = 0;
-    await batch.commit();
-    await db.collection("notificationLogs").add({
-        title: "NoList",
-        body: `${randomHabit}見てませんか？`,
-        successCount: result.successCount,
-        failureCount: result.failureCount,
-        sentAt: new Date().toISOString(),
-        userId: userId,
-    });
+            }
+        });
+
+        await batch.commit();
+
+        await db.collection("notificationLogs").add({
+            title: "NoList",
+            body: messageBody,
+            successCount: result.successCount,
+            failureCount: result.failureCount,
+            sentAt: new Date().toISOString(),
+            userId: targetUserId,
+        });
+    }
     return NextResponse.json({
         ok: true,
-        tokenCount: tokens.length,
-        successCount: result.successCount,
-        failureCount: result.failureCount,
-        deletedTokenCount,
-        userId,
+        jstTime,
+        targetUserCount: targetUserIds.length,
+        successCount,
+        failureCount,
     });
 }
 
 export async function GET() {
-
-    return NextResponse.json({
-        ok: false,
-        message:
-            "GETは未対応",
-    });
-
+    return POST(
+        new Request("https://dummy.local/api/send-push", {
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+    );
 }
