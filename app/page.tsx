@@ -52,7 +52,10 @@ export default function Home() {
 
   const [streak, setStreak] =
     useState(5);
-
+  const [todayRanking, setTodayRanking] =
+    useState<
+      { title: string; count: number }[]
+    >([]);
   const [successRate, setSuccessRate] =
     useState(82);
   const [todayFailedHabits, setTodayFailedHabits] =
@@ -109,6 +112,49 @@ export default function Home() {
             .startsWith(today)
       );
     setTodayFailedHabits(todayLogs);
+    const rankingMap:
+      Record<string, number> = {};
+
+    todayLogs.forEach(
+      (log: any) => {
+
+        rankingMap[
+          log.habitId
+        ] =
+          (
+            rankingMap[
+            log.habitId
+            ] || 0
+          ) + 1;
+
+      }
+    );
+
+    const ranking =
+      Object.entries(
+        rankingMap
+      )
+        .map(
+          ([habitId, count]) => ({
+            title:
+              habits.find(
+                (habit) =>
+                  habit.id === habitId
+              )?.title
+              || "不明",
+            count:
+              count as number,
+          })
+        )
+        .sort(
+          (a, b) =>
+            b.count -
+            a.count
+        );
+
+    setTodayRanking(
+      ranking
+    );
     const count =
       todayLogs.length;
 
@@ -855,6 +901,31 @@ export default function Home() {
 
             ))}
 
+          </div>
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-3">
+              今日の誘惑ランキング
+            </h2>
+
+            <div className="space-y-2">
+              {todayRanking.map(
+                (item, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-900 rounded-xl p-3 flex justify-between"
+                  >
+                    <p>
+                      {index + 1}位
+                      {item.title}
+                    </p>
+
+                    <p>
+                      {item.count}回
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
           </div>
           <div className="mt-8">
             <h2 className="text-xl font-bold mb-3">
