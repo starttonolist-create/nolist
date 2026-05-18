@@ -459,23 +459,20 @@ export default function Home() {
           setUser(currentUser);
 
           if (currentUser) {
-
             fetchHabits();
-
             fetchLogs();
-
-            fetchNotificationLogs(
-              currentUser.uid
-            );
-
-            fetchNotificationTime(
-              currentUser.uid
-            );
-
-            fetchFcmStatus(
-              currentUser.uid
-            );
-
+            fetchNotificationLogs(currentUser.uid);
+            fetchNotificationTime(currentUser.uid);
+            fetchFcmStatus(currentUser.uid);
+          } else {
+            setHabits([]);
+            setNotificationLogs([]);
+            setFcmEnabled(false);
+            setWasteTime(0);
+            setFailCount(0);
+            setStreak(0);
+            setSuccessRate(0);
+            setNotificationTime("21:00");
           }
         }
       );
@@ -754,13 +751,17 @@ export default function Home() {
 
                   <button
                     onClick={async () => {
+                      const ok = confirm(
+                        "本当に削除しますか？"
+                      );
+
+                      if (!ok) return;
 
                       await deleteDoc(
                         doc(db, "habits", habit.id)
                       );
 
                       fetchHabits();
-
                     }}
                     className="
                     text-xs
