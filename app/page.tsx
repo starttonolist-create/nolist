@@ -310,6 +310,20 @@ export default function Home() {
 
     if (!user) return;
 
+    if (!user) return;
+
+    // 先にUI更新
+    setFailCount((prev) => prev + 1);
+
+    setWasteTime((prev) =>
+      prev + 20
+    );
+
+    setSuccessRate((prev) =>
+      Math.max(0, prev - 5)
+    );
+
+    // DB保存
     await addDoc(
       collection(db, "logs"),
       {
@@ -320,6 +334,7 @@ export default function Home() {
       }
     );
 
+    // 最終同期
     fetchLogs();
   };
   const login = async () => {
@@ -705,6 +720,11 @@ export default function Home() {
               onChange={(e) =>
                 setInput(e.target.value)
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  addHabit();
+                }
+              }}
               placeholder="やらないこと"
               className="
               flex-1
