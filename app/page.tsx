@@ -63,19 +63,17 @@ export default function Home() {
 
     const q = query(
       collection(db, "habits"),
-      where("userId", "==", user.uid)
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
     );
-
     const snapshot =
       await getDocs(q);
 
     const data =
-      snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as any),
-        }))
-        .reverse();
+      snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as any),
+      }));
 
     setHabits(data);
   };
@@ -215,9 +213,9 @@ export default function Home() {
       {
         title,
         userId: user.uid,
+        createdAt: new Date().toISOString(),
       }
     );
-
     setInput("");
 
     fetchHabits();
