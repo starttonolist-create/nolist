@@ -70,10 +70,12 @@ export default function Home() {
       await getDocs(q);
 
     const data =
-      snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as any),
-      }));
+      snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as any),
+        }))
+        .reverse();
 
     setHabits(data);
   };
