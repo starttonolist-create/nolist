@@ -207,7 +207,18 @@ export default function Home() {
 
     if (!title || !user)
       return;
+    const exists =
+      habits.some(
+        (habit) =>
+          habit.title.trim() === title
+      );
 
+    if (exists) {
+      alert(
+        "同じやらないことがあります"
+      );
+      return;
+    }
     await addDoc(
       collection(db, "habits"),
       {
