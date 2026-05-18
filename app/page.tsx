@@ -55,7 +55,8 @@ export default function Home() {
 
   const [successRate, setSuccessRate] =
     useState(82);
-
+  const [todayFailedHabits, setTodayFailedHabits] =
+    useState<any[]>([]);
   // habits取得
   const fetchHabits = async () => {
 
@@ -107,19 +108,35 @@ export default function Home() {
           String(log.createdAt)
             .startsWith(today)
       );
-
+    setTodayFailedHabits(todayLogs);
     const count =
       todayLogs.length;
 
+    console.log(
+      "今日の失敗ログ",
+      todayLogs
+    );
     setFailCount(count);
 
     setWasteTime(count * 20);
 
-    setSuccessRate(
-      Math.max(0, 100 - count * 5)
-    );
+    const totalLogs =
+      logs.length;
 
-    setStreak(count === 0 ? 1 : 0);
+    const rate =
+      Math.max(
+        0,
+        100 - totalLogs * 2
+      );
+
+    setSuccessRate(rate);
+
+    const hasFailedToday =
+      todayLogs.length > 0;
+
+    setStreak(
+      hasFailedToday ? 0 : 1
+    );
   };
   const fetchNotificationLogs = async (
     uid?: string) => {
@@ -207,12 +224,18 @@ export default function Home() {
 
     if (!title || !user)
       return;
+    const normalize = (text: string) =>
+      text
+        .trim()
+        .replace(/\s+/g, "")
+        .toLowerCase();
+
     const exists =
       habits.some(
         (habit) =>
-          habit.title.trim() === title
+          normalize(habit.title) ===
+          normalize(title)
       );
-
     if (exists) {
       alert(
         "同じやらないことがあります"
@@ -832,6 +855,27 @@ export default function Home() {
 
             ))}
 
+          </div>
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-3">
+              今日破った記録
+            </h2>
+
+            <div className="space-y-2">
+              {todayFailedHabits.map((log, index) => (
+                <div
+                  key={index}
+                  className="bg-zinc-900 rounded-xl p-3 text-sm"
+                >
+                  <p>
+                    {log.habitId}
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    {log.createdAt}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="mt-8">
             <h2 className="text-xl font-bold mb-3">
