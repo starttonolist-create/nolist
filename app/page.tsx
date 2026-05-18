@@ -774,9 +774,15 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={() =>
-                    failHabit(habit.id)
-                  }
+                  onClick={() => {
+                    const ok = confirm(
+                      "本当に破った記録を追加しますか？"
+                    );
+
+                    if (!ok) return;
+
+                    failHabit(habit.id);
+                  }}
                   className="
                   bg-red-500
                   px-4
