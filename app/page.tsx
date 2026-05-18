@@ -868,9 +868,14 @@ export default function Home() {
                   className="bg-zinc-900 rounded-xl p-3 text-sm"
                 >
                   <p>
-                    {log.habitId}
-                  </p>
-                  <p className="text-gray-500 text-xs">
+                    {
+                      habits.find(
+                        (habit) =>
+                          habit.id === log.habitId
+                      )?.title
+                      || "不明"
+                    }
+                  </p>                  <p className="text-gray-500 text-xs">
                     {log.createdAt}
                   </p>
                 </div>
