@@ -202,13 +202,16 @@ export default function Home() {
   // habit追加
   const addHabit = async () => {
 
-    if (!input || !user)
+    const title =
+      input.trim();
+
+    if (!title || !user)
       return;
 
     await addDoc(
       collection(db, "habits"),
       {
-        title: input,
+        title,
         userId: user.uid,
       }
     );
