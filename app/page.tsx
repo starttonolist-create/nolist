@@ -966,7 +966,21 @@ export default function Home() {
                         保存
                       </button>
                     )}
-
+                  {editingHabitId ===
+                    habit.id && (
+                      <button
+                        onClick={() => {
+                          setEditingHabitId(null);
+                          setEditingText("");
+                        }}
+                        className="
+      text-xs
+      text-gray-500
+    "
+                      >
+                        キャンセル
+                      </button>
+                    )}
                   <button
                     onClick={() => {
 
