@@ -279,6 +279,12 @@ export default function Home() {
 
     if (!title || !user)
       return;
+    if (habits.length >= 10) {
+      alert(
+        "やらないことは10個までです"
+      );
+      return;
+    }
     const normalize = (text: string) =>
       text
         .trim()
@@ -318,7 +324,29 @@ export default function Home() {
         editingText.trim();
 
       if (!title) return;
+      const normalize =
+        (text: string) =>
+          text
+            .trim()
+            .replace(/\s+/g, "")
+            .toLowerCase();
 
+      const exists =
+        habits.some(
+          (habit) =>
+            habit.id !== habitId &&
+            normalize(
+              habit.title
+            ) ===
+            normalize(title)
+        );
+
+      if (exists) {
+        alert(
+          "同じやらないことがあります"
+        );
+        return;
+      }
       await setDoc(
         doc(
           db,
@@ -865,6 +893,9 @@ export default function Home() {
               ? "🔥 今日守れている"
               : `⚠️ 今日 ${failCount}回破った`}
           </div>
+          <p className="text-gray-500 text-sm mb-2">
+            登録数: {habits.length}/10
+          </p>
           {/* 入力 */}
           <div className="flex gap-2 mb-6">
 
@@ -933,6 +964,11 @@ export default function Home() {
                           e.target.value
                         )
                       }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          updateHabit(habit.id);
+                        }
+                      }}
                       className="
         bg-zinc-800
         rounded
