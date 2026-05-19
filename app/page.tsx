@@ -31,6 +31,7 @@ import {
 type Habit = {
   id: string;
   title: string;
+  createdAt?: string;
 };
 import { getToken, onMessage, } from "firebase/messaging";
 import { messaging, } from "../lib/firebase";
@@ -1039,6 +1040,35 @@ export default function Home() {
                         編集
                       </button>
                     )}
+                  <button
+                    onClick={async () => {
+
+                      await setDoc(
+                        doc(
+                          db,
+                          "habits",
+                          habit.id
+                        ),
+                        {
+                          createdAt:
+                            new Date()
+                              .toISOString(),
+                        },
+                        {
+                          merge: true,
+                        }
+                      );
+
+                      fetchHabits();
+
+                    }}
+                    className="
+    text-xs
+    text-yellow-400
+  "
+                  >
+                    ↑
+                  </button>
                   <button
                     onClick={async () => {
 
