@@ -981,25 +981,28 @@ export default function Home() {
                         キャンセル
                       </button>
                     )}
-                  <button
-                    onClick={() => {
+                  {editingHabitId !==
+                    habit.id && (
+                      <button
+                        onClick={() => {
 
-                      setEditingHabitId(
-                        habit.id
-                      );
+                          setEditingHabitId(
+                            habit.id
+                          );
 
-                      setEditingText(
-                        habit.title
-                      );
+                          setEditingText(
+                            habit.title
+                          );
 
-                    }}
-                    className="
-                      text-xs
-                      text-blue-400
-                    "
-                  >
-                    編集
-                  </button>
+                        }}
+                        className="
+      text-xs
+      text-blue-400
+    "
+                      >
+                        編集
+                      </button>
+                    )}
                   <button
                     onClick={async () => {
 
