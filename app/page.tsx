@@ -46,7 +46,11 @@ export default function Home() {
     useState(false);
   const [wasteTime, setWasteTime] =
     useState(0);
+  const [editingHabitId, setEditingHabitId] =
+    useState<string | null>(null);
 
+  const [editingText, setEditingText] =
+    useState("");
   const [failCount, setFailCount] =
     useState(0);
 
@@ -176,7 +180,12 @@ export default function Home() {
       );
 
     setSuccessRate(rate);
+    const todaySuccess =
+      todayLogs.length === 0;
 
+    if (todaySuccess) {
+      setSuccessRate(100);
+    }
     const hasFailedToday =
       todayLogs.length > 0;
 
@@ -300,6 +309,43 @@ export default function Home() {
 
     fetchHabits();
   };
+  const updateHabit =
+    async (
+      habitId: string
+    ) => {
+
+      const title =
+        editingText.trim();
+
+      if (!title) return;
+
+      await setDoc(
+        doc(
+          db,
+          "habits",
+          habitId
+        ),
+        {
+          title,
+          userId:
+            user?.uid,
+          createdAt:
+            new Date()
+              .toISOString(),
+        },
+        {
+          merge: true,
+        }
+      );
+
+      setEditingHabitId(
+        null
+      );
+
+      setEditingText("");
+
+      fetchHabits();
+    };
   const enableFCM =
     async () => {
 
@@ -578,7 +624,18 @@ export default function Home() {
     return () => unsubscribe();
 
   }, [user]);
-
+  const formatDateTime = (value: string) => {
+    return new Date(value).toLocaleString(
+      "ja-JP",
+      {
+        timeZone: "Asia/Tokyo",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
   const requestNotification =
     async () => {
 
@@ -791,7 +848,23 @@ export default function Home() {
             </div>
 
           </div>
-
+          <div
+            className={`
+              mb-6
+              rounded-2xl
+              p-4
+              text-center
+              font-bold
+              ${failCount === 0
+                ? "bg-green-900"
+                : "bg-red-900"
+              }
+              `}
+          >
+            {failCount === 0
+              ? "🔥 今日守れている"
+              : `⚠️ 今日 ${failCount}回破った`}
+          </div>
           {/* 入力 */}
           <div className="flex gap-2 mb-6">
 
@@ -850,13 +923,77 @@ export default function Home() {
 
                 <div className="flex items-center gap-2">
 
-                  <p>{habit.title}</p>
+                  {editingHabitId ===
+                    habit.id ? (
+
+                    <input
+                      value={editingText}
+                      onChange={(e) =>
+                        setEditingText(
+                          e.target.value
+                        )
+                      }
+                      className="
+        bg-zinc-800
+        rounded
+        px-2
+        py-1
+        text-sm
+      "
+                    />
+
+                  ) : (
+
+                    <p>
+                      {habit.title}
+                    </p>
+
+                  )}
+
+                  <button
+                    onClick={() => {
+
+                      setEditingHabitId(
+                        habit.id
+                      );
+
+                      setEditingText(
+                        habit.title
+                      );
+
+                    }}
+                    className="
+      text-xs
+      text-blue-400
+    "
+                  >
+                    編集
+                  </button>
+
+                  {editingHabitId ===
+                    habit.id && (
+                      <button
+                        onClick={() =>
+                          updateHabit(
+                            habit.id
+                          )
+                        }
+                        className="
+        text-xs
+        text-green-400
+      "
+                      >
+                        保存
+                      </button>
+                    )}
 
                   <button
                     onClick={async () => {
-                      const ok = confirm(
-                        "本当に削除しますか？"
-                      );
+
+                      const ok =
+                        confirm(
+                          "本当に削除しますか？"
+                        );
 
                       if (!ok) return;
 
@@ -865,15 +1002,35 @@ export default function Home() {
                       );
 
                       fetchHabits();
+
                     }}
                     className="
-                    text-xs
-                    text-gray-400
-                  "
+      text-xs
+      text-gray-400
+    "
                   >
                     削除
                   </button>
 
+                  <button
+                    onClick={() => {
+
+                      setEditingHabitId(
+                        habit.id
+                      );
+
+                      setEditingText(
+                        habit.title
+                      );
+
+                    }}
+                    className="
+                      text-xs
+                      text-blue-400
+                    "
+                  >
+                    編集
+                  </button>
                 </div>
 
                 <button
@@ -908,9 +1065,13 @@ export default function Home() {
             </h2>
 
             <div className="space-y-2">
-              {todayRanking.map(
-                (item, index) => (
-                  <div
+              {todayRanking.length === 0 ? (
+                <p className="text-gray-500 text-sm">
+                  今日はまだ破っていません。いい感じです。
+                </p>
+              ) : (
+                todayRanking.map(
+                  (item, index) => (<div
                     key={index}
                     className="bg-zinc-900 rounded-xl p-3 flex justify-between"
                   >
@@ -923,6 +1084,7 @@ export default function Home() {
                       {item.count}回
                     </p>
                   </div>
+                  )
                 )
               )}
             </div>
@@ -933,24 +1095,30 @@ export default function Home() {
             </h2>
 
             <div className="space-y-2">
-              {todayFailedHabits.map((log, index) => (
-                <div
-                  key={index}
-                  className="bg-zinc-900 rounded-xl p-3 text-sm"
-                >
-                  <p>
-                    {
-                      habits.find(
-                        (habit) =>
-                          habit.id === log.habitId
-                      )?.title
-                      || "不明"
-                    }
-                  </p>                  <p className="text-gray-500 text-xs">
-                    {log.createdAt}
-                  </p>
-                </div>
-              ))}
+              {todayFailedHabits.length === 0 ? (
+                <p className="text-gray-500 text-sm">
+                  記録なし。今日は守れています。
+                </p>
+              ) : (
+                todayFailedHabits.map((log, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-900 rounded-xl p-3 text-sm"
+                  >
+                    <p>
+                      {
+                        habits.find(
+                          (habit) =>
+                            habit.id === log.habitId
+                        )?.title
+                        || "不明"
+                      }
+                    </p>                  <p className="text-gray-500 text-xs">
+                      {formatDateTime(log.createdAt)}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
           <div className="mt-8">
@@ -962,12 +1130,33 @@ export default function Home() {
               {notificationLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="bg-zinc-900 rounded-xl p-3 text-sm"
+                  className="
+                    bg-zinc-900
+                    rounded-xl
+                    p-4
+                    border
+                    border-zinc-800
+                  "
                 >
-                  <p>{log.body}</p>
-                  <p className="text-gray-500 text-xs">
-                    {log.sentAt}
-                  </p>
+                  <div className="flex justify-between items-start">
+
+                    <div>
+                      <p className="font-bold">
+                        📣 通知
+                      </p>
+
+                      <p className="text-sm mt-1">
+                        {log.body}
+                      </p>
+                    </div>
+
+                    <p className="text-gray-500 text-xs">
+                      {formatDateTime(
+                        log.sentAt
+                      )}
+                    </p>
+
+                  </div>
                 </div>
               ))}
             </div>
