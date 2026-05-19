@@ -1012,26 +1012,26 @@ export default function Home() {
                     削除
                   </button>
 
-                  <button
-                    onClick={() => {
+                </div>
+                <button
+                  onClick={() => {
 
-                      setEditingHabitId(
-                        habit.id
-                      );
+                    setEditingHabitId(
+                      habit.id
+                    );
 
-                      setEditingText(
-                        habit.title
-                      );
+                    setEditingText(
+                      habit.title
+                    );
 
-                    }}
-                    className="
+                  }}
+                  className="
                       text-xs
                       text-blue-400
                     "
-                  >
-                    編集
-                  </button>
-                </div>
+                >
+                  編集
+                </button>
 
                 <button
                   onClick={() => {
