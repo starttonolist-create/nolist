@@ -968,6 +968,25 @@ export default function Home() {
                     )}
 
                   <button
+                    onClick={() => {
+
+                      setEditingHabitId(
+                        habit.id
+                      );
+
+                      setEditingText(
+                        habit.title
+                      );
+
+                    }}
+                    className="
+                      text-xs
+                      text-blue-400
+                    "
+                  >
+                    編集
+                  </button>
+                  <button
                     onClick={async () => {
 
                       const ok =
@@ -993,25 +1012,6 @@ export default function Home() {
                   </button>
 
                 </div>
-                <button
-                  onClick={() => {
-
-                    setEditingHabitId(
-                      habit.id
-                    );
-
-                    setEditingText(
-                      habit.title
-                    );
-
-                  }}
-                  className="
-                      text-xs
-                      text-blue-400
-                    "
-                >
-                  編集
-                </button>
 
                 <button
                   onClick={() => {
