@@ -274,6 +274,33 @@ export default function Home() {
       );
 
     };
+  const checkGuideStatus =
+    async (
+      uid?: string
+    ) => {
+
+      const targetUid =
+        uid || user?.uid;
+
+      if (!targetUid) return;
+
+      const snapshot =
+        await getDoc(
+          doc(
+            db,
+            "userSettings",
+            targetUid
+          )
+        );
+
+      const data =
+        snapshot.data();
+
+      if (!data?.guideSeen) {
+        setShowGuide(true);
+      }
+
+    };
   // habit追加
   const addHabit = async () => {
 
@@ -493,6 +520,9 @@ export default function Home() {
 
     // 最終同期
     fetchLogs();
+    alert(
+      "記録しました。次の1回を止めればOKです。"
+    );
   };
   const login = async () => {
 
@@ -639,14 +669,7 @@ export default function Home() {
             fetchNotificationLogs(currentUser.uid);
             fetchNotificationTime(currentUser.uid);
             fetchFcmStatus(currentUser.uid);
-            const firstVisit =
-              localStorage.getItem(
-                "nolist-guide"
-              );
-
-            if (!firstVisit) {
-              setShowGuide(true);
-            }
+            checkGuideStatus(currentUser.uid);
           } else {
             setHabits([]);
             setNotificationLogs([]);
@@ -779,16 +802,25 @@ export default function Home() {
               </div>
 
               <button
-                onClick={() => {
+                onClick={async () => {
 
-                  localStorage.setItem(
-                    "nolist-guide",
-                    "done"
-                  );
+                  if (user) {
+                    await setDoc(
+                      doc(
+                        db,
+                        "userSettings",
+                        user.uid
+                      ),
+                      {
+                        guideSeen: true,
+                      },
+                      {
+                        merge: true,
+                      }
+                    );
+                  }
 
-                  setShowGuide(
-                    false
-                  );
+                  setShowGuide(false);
 
                 }}
                 className="
@@ -812,6 +844,32 @@ export default function Home() {
           <h1 className="text-4xl font-bold mb-2">
             NoList
           </h1>
+          <button
+            onClick={() =>
+              setShowGuide(true)
+            }
+            className="
+    text-xs
+    text-gray-500
+    underline
+    mb-4
+  "
+          >
+            使い方を見る
+          </button>
+          <button
+            onClick={() =>
+              setShowGuide(true)
+            }
+            className="
+    text-xs
+    text-gray-500
+    underline
+    mb-4
+  "
+          >
+            使い方を見る
+          </button>
           {
             user ? (
               <div className="mb-6">
@@ -823,31 +881,52 @@ export default function Home() {
                 <button
                   onClick={logout}
                   className="
-                    mt-2
-                    text-sm
-                    text-gray-400
-                    underline
-                  "
+          mt-2
+          text-sm
+          text-gray-400
+          underline
+        "
                 >
                   ログアウト
                 </button>
               </div>
             ) : (
-              <button
-                onClick={login}
-                className="
-                bg-white
-                text-black
-                px-4
-                py-2
-                rounded-xl
-                mb-6
-                font-bold
-              "
-              >
-                Googleでログイン
-              </button>
+              <div className="mb-6">
 
+                <div className="
+        text-gray-300
+        text-sm
+        space-y-2
+        mb-4
+      ">
+                  <p>
+                    NoListは
+                    「やらないこと」
+                    を守るためのアプリです。
+                  </p>
+
+                  <p>
+                    通知で自分を止め、
+                    破った記録を
+                    見える化します。
+                  </p>
+                </div>
+
+                <button
+                  onClick={login}
+                  className="
+          bg-white
+          text-black
+          px-4
+          py-2
+          rounded-xl
+          font-bold
+        "
+                >
+                  Googleでログイン
+                </button>
+
+              </div>
             )
           }
           <button
@@ -1192,10 +1271,17 @@ export default function Home() {
                 <button
                   onClick={() => {
                     const ok = confirm(
-                      "本当に破った記録を追加しますか？"
+                      `${habit.title}
+                    本当に見ますか？`
                     );
-
                     if (!ok) return;
+
+                    const secondCheck =
+                      confirm(
+                        "今やる必要がありますか？"
+                      );
+
+                    if (!secondCheck) return;
 
                     failHabit(habit.id);
                   }}
