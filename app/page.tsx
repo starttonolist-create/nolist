@@ -41,6 +41,8 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [notificationTime, setNotificationTime] = useState("21:00");
+  const [showGuide, setShowGuide] =
+    useState(false);
   const [notificationLogs, setNotificationLogs] =
     useState<any[]>([]);
   const [fcmEnabled, setFcmEnabled] =
@@ -637,6 +639,14 @@ export default function Home() {
             fetchNotificationLogs(currentUser.uid);
             fetchNotificationTime(currentUser.uid);
             fetchFcmStatus(currentUser.uid);
+            const firstVisit =
+              localStorage.getItem(
+                "nolist-guide"
+              );
+
+            if (!firstVisit) {
+              setShowGuide(true);
+            }
           } else {
             setHabits([]);
             setNotificationLogs([]);
@@ -726,7 +736,77 @@ export default function Home() {
       }, 5000);
     }; return (
       <main className="min-h-screen bg-black text-white p-6">
+        {showGuide && (
+          <div
+            className="
+      fixed
+      inset-0
+      bg-black/80
+      z-50
+      flex
+      items-center
+      justify-center
+      p-6
+    "
+          >
+            <div
+              className="
+        bg-zinc-900
+        rounded-3xl
+        p-6
+        max-w-sm
+      "
+            >
+              <h2 className="text-xl font-bold mb-4">
+                ようこそ NoList
+              </h2>
 
+              <div className="space-y-3 text-sm text-gray-300">
+
+                <p>
+                  ① やらないことを登録
+                </p>
+
+                <p>
+                  ② 通知を有効化
+                </p>
+
+                <p>
+                  ③ 守れなかったら
+                  「破った」
+                </p>
+
+              </div>
+
+              <button
+                onClick={() => {
+
+                  localStorage.setItem(
+                    "nolist-guide",
+                    "done"
+                  );
+
+                  setShowGuide(
+                    false
+                  );
+
+                }}
+                className="
+          mt-6
+          w-full
+          bg-white
+          text-black
+          rounded-xl
+          py-3
+          font-bold
+        "
+              >
+                はじめる
+              </button>
+
+            </div>
+          </div>
+        )}
         <div className="max-w-md mx-auto">
 
           <h1 className="text-4xl font-bold mb-2">
@@ -771,19 +851,6 @@ export default function Home() {
             )
           }
           <button
-            onClick={requestNotification}
-            className="
-          bg-zinc-800
-          px-4  
-          py-2
-          rounded-xl
-          mb-6
-          ml-2
-        "
-          >
-            🔔 通知ON
-          </button>
-          <button
             onClick={enableFCM}
             className={`
               px-4
@@ -796,8 +863,8 @@ export default function Home() {
               }
             `}
           > {fcmEnabled
-            ? "✅ 通知ON済み"
-            : "FCM ON"}
+            ? "✅ 通知を有効化済み"
+            : "🔔 通知を有効にする"}
 
           </button>
 
