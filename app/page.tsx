@@ -950,26 +950,6 @@ export default function Home() {
 
                   )}
 
-                  <button
-                    onClick={() => {
-
-                      setEditingHabitId(
-                        habit.id
-                      );
-
-                      setEditingText(
-                        habit.title
-                      );
-
-                    }}
-                    className="
-      text-xs
-      text-blue-400
-    "
-                  >
-                    編集
-                  </button>
-
                   {editingHabitId ===
                     habit.id && (
                       <button
