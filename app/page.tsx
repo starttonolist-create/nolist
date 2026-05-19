@@ -1063,11 +1063,37 @@ export default function Home() {
 
                     }}
                     className="
-    text-xs
-    text-yellow-400
-  "
-                  >
+  text-xs
+  text-gray-400
+"                  >
                     ↑
+                  </button>
+                  <button
+                    onClick={async () => {
+
+                      await setDoc(
+                        doc(
+                          db,
+                          "habits",
+                          habit.id
+                        ),
+                        {
+                          createdAt:
+                            "2000-01-01T00:00:00.000Z",
+                        },
+                        {
+                          merge: true,
+                        }
+                      );
+
+                      fetchHabits();
+
+                    }}
+                    className="
+  text-xs
+  text-gray-400
+"                  >
+                    ↓
                   </button>
                   <button
                     onClick={async () => {
